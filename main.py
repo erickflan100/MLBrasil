@@ -7,14 +7,15 @@ from sklearn.metrics import accuracy_score, classification_report
 from imblearn.over_sampling import SMOTE
 
 # 1. Carregar os dados
-df = pd.read_excel('BRA.xlsx')
+df = pd.read_excel('USA.xlsx')
 
 dt = df[4530:4800]
 
-df = df[4430:4780]
+# df = df[4430:4780]
+df = df.tail(500)
 
 # Função para calcular os gols marcados e sofridos nas últimas n partidas
-def calcular_gols_ultimos_jogos(df, equipe_casa, equipe_fora, idx_atual, n=35):
+def calcular_gols_ultimos_jogos(df, equipe_casa, equipe_fora, idx_atual, n=50):
     # Filtra jogos anteriores ao jogo atual (antes de idx_atual)
     jogos_casa = df[(df['Home'] == equipe_casa) & (df.index < idx_atual)][['HG', 'AG']].tail(n)
     jogos_fora = df[(df['Away'] == equipe_fora) & (df.index < idx_atual)][['AG', 'HG']].tail(n)
@@ -138,21 +139,21 @@ cv_scores = cross_val_score(model, X_resampled, y_resampled, cv=5)
 print("Acurácia média com Cross-Validation:", cv_scores.mean())
 
 # Tuning de hiperparâmetros usando GridSearchCV
-param_grid = {
-    'n_estimators': [50, 100, 200, 300, 500],         # Número de árvores na floresta
-    'max_depth': [5, 10, 20, 30, None],               # Profundidade máxima de cada árvore (None significa sem limite)
-    'min_samples_split': [2, 5, 10, 15],              # Número mínimo de amostras necessárias para dividir um nó
-    'min_samples_leaf': [1, 2, 4, 10],                # Número mínimo de amostras necessárias em uma folha
-    'max_features': ['auto', 'sqrt', 'log2', None],   # Número de features a serem consideradas para encontrar a melhor divisão
-    'bootstrap': [True, False],                       # Se deve ou não usar o bootstrap para amostragem das árvores
-    'criterion': ['gini', 'entropy'],                 # Critério de divisão usado nas árvores
-    'class_weight': [None, 'balanced', 'balanced_subsample']  # Ajuste de pesos para classes desbalanceadas
-}
-grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=5, scoring='accuracy')
-grid_search.fit(X_train, y_train)
+# param_grid = {
+#     'n_estimators': [50, 100, 200, 300, 500],         # Número de árvores na floresta
+#     'max_depth': [5, 10, 20, 30, None],               # Profundidade máxima de cada árvore (None significa sem limite)
+#     'min_samples_split': [2, 5, 10, 15],              # Número mínimo de amostras necessárias para dividir um nó
+#     'min_samples_leaf': [1, 2, 4, 10],                # Número mínimo de amostras necessárias em uma folha
+#     'max_features': ['auto', 'sqrt', 'log2', None],   # Número de features a serem consideradas para encontrar a melhor divisão
+#     'bootstrap': [True, False],                       # Se deve ou não usar o bootstrap para amostragem das árvores
+#     'criterion': ['gini', 'entropy'],                 # Critério de divisão usado nas árvores
+#     'class_weight': [None, 'balanced', 'balanced_subsample']  # Ajuste de pesos para classes desbalanceadas
+# }
+# grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=5, scoring='accuracy')
+# grid_search.fit(X_train, y_train)
 
-print("Melhores parâmetros:", grid_search.best_params_)
-print("Melhor acurácia após GridSearch:", grid_search.best_score_)
+# print("Melhores parâmetros:", grid_search.best_params_)
+# print("Melhor acurácia após GridSearch:", grid_search.best_score_)
 
 # dfe = df.tail(20)
 
