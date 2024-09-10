@@ -7,15 +7,15 @@ from sklearn.metrics import accuracy_score, classification_report
 from imblearn.over_sampling import SMOTE
 
 # 1. Carregar os dados
-df = pd.read_excel('USA.xlsx')
+df = pd.read_excel('BRA.xlsx')
 
-dt = df[4530:4800]
+# dt = df[4530:4800]
 
 # df = df[4430:4780]
 df = df.tail(500)
 
 # Função para calcular os gols marcados e sofridos nas últimas n partidas
-def calcular_gols_ultimos_jogos(df, equipe_casa, equipe_fora, idx_atual, n=50):
+def calcular_gols_ultimos_jogos(df, equipe_casa, equipe_fora, idx_atual, n=5):
     # Filtra jogos anteriores ao jogo atual (antes de idx_atual)
     jogos_casa = df[(df['Home'] == equipe_casa) & (df.index < idx_atual)][['HG', 'AG']].tail(n)
     jogos_fora = df[(df['Away'] == equipe_fora) & (df.index < idx_atual)][['AG', 'HG']].tail(n)
@@ -36,10 +36,10 @@ df['gols_sofridos_casa'] = 0
 df['gols_marcados_fora'] = 0
 df['gols_sofridos_fora'] = 0
 
-dt['gols_marcados_casa'] = 0
-dt['gols_sofridos_casa'] = 0
-dt['gols_marcados_fora'] = 0
-dt['gols_sofridos_fora'] = 0
+# dt['gols_marcados_casa'] = 0
+# dt['gols_sofridos_casa'] = 0
+# dt['gols_marcados_fora'] = 0
+# dt['gols_sofridos_fora'] = 0
 
 # Iterando sobre cada linha (jogo) no DataFrame
 for index, row in df.iterrows():
@@ -57,19 +57,19 @@ for index, row in df.iterrows():
     df.at[index, 'gols_sofridos_fora'] = gols_sofridos_fora
 
 # Iterando sobre cada linha (jogo) no DataFrame
-for index, row in dt.iterrows():
-    # Time da casa e visitante
-    time_casa = row['Home']
-    time_fora = row['Away']
+# for index, row in dt.iterrows():
+#     # Time da casa e visitante
+#     time_casa = row['Home']
+#     time_fora = row['Away']
 
-    # Calcular os gols marcados e sofridos para o time da casa e visitante
-    gols_marcados_casa, gols_sofridos_casa, gols_marcados_fora, gols_sofridos_fora = calcular_gols_ultimos_jogos(df, time_casa, time_fora, index)
+#     # Calcular os gols marcados e sofridos para o time da casa e visitante
+#     gols_marcados_casa, gols_sofridos_casa, gols_marcados_fora, gols_sofridos_fora = calcular_gols_ultimos_jogos(df, time_casa, time_fora, index)
 
-    # Atualizando o DataFrame com os valores calculados
-    dt.at[index, 'gols_marcados_casa'] = gols_marcados_casa
-    dt.at[index, 'gols_sofridos_casa'] = gols_sofridos_casa
-    dt.at[index, 'gols_marcados_fora'] = gols_marcados_fora
-    dt.at[index, 'gols_sofridos_fora'] = gols_sofridos_fora
+#     # Atualizando o DataFrame com os valores calculados
+#     dt.at[index, 'gols_marcados_casa'] = gols_marcados_casa
+#     dt.at[index, 'gols_sofridos_casa'] = gols_sofridos_casa
+#     dt.at[index, 'gols_marcados_fora'] = gols_marcados_fora
+#     dt.at[index, 'gols_sofridos_fora'] = gols_sofridos_fora
 
 # dt = dt.tail(20)
 # Exibindo o DataFrame atualizado
@@ -104,8 +104,8 @@ X_resampled, y_resampled = smote.fit_resample(X_scaled, y)
 X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
 
 # 5. Treinar o modelo
-# model = RandomForestClassifier(max_features=None, max_depth=20, min_samples_split=2, n_estimators=100, min_samples_leaf=1, bootstrap=True, criterion='gini', random_state=42)
-model = RandomForestClassifier(random_state=42)
+model = RandomForestClassifier(max_features=None, max_depth=20, min_samples_split=2, n_estimators=100, min_samples_leaf=1, bootstrap=True, criterion='gini', random_state=42)
+# model = RandomForestClassifier(random_state=42)
 model.fit(X_train, y_train)
 
 # 6. Fazer previsões e avaliar o modelo
@@ -189,6 +189,7 @@ novo_jogo = [[16, 3, 2.17, 3.01, 3.80, 13, 12, 17, 18]]
 previsao = model.predict(novo_jogo)
 time_casa = decodificar_time(novo_jogo[0][0])
 time_visitante = decodificar_time(novo_jogo[0][1])
+print(previsao[0])
 print(decodificar_res(previsao[0]))
 # print(f"Previsão para o jogo {time_casa} vs {time_visitante}: {'Vitória do time da casa' if previsao[0] == 1 else 'Vitória do time visitante'}")
 if previsao[0] == 2:
